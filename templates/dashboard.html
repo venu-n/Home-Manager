@@ -1,0 +1,52 @@
+
+{% extends "template.html" %}
+{% block content %}
+<!--<script src="https://code.jquery.com/jquery-3.3.1.js"></script>-->
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>-->
+
+<div class="container-fluid">
+    <div style="width: 35rem;font-size: 14px">
+
+      <div class="row">
+          <div class="col-md"><span class="badge badge-dark">Temperature: 99C</span></div>
+          <div class="col-md"><span class="badge badge-dark">Humidity: 99%</span></div>
+          <div class="col-md"><span class="badge badge-dark">Pressure: 99psa</span></div>
+          <div class="col-md"><span class="badge badge-dark">Altitude: 199MSL</span></div>
+      </div>
+        <div class="row">
+            <div class="col-sm"><span class="badge badge-success">Device 1: ON</span></div>
+            <div class="col-sm"><span class="badge badge-danger">Device 2: OFF</span></div>
+            <div class="col-sm"><span class="badge badge-danger">Device 3: OFF</span></div>
+            <div class="col-sm"><span class="badge badge-danger">Device 4: OFF</span></div>
+        </div>
+    </div>
+</div>
+<h5> Current Status </h5>
+<div> {{ data }}</div>
+<h5> Current Status </h5>
+<div class="row">
+{% for switch in switch_state %}
+    <div class="col-sm">
+    {% if (switch_state[switch].state) == 'true' %}
+    <span class="badge badge-success"> {{ switch_state[switch].name }} : ON </span>
+    {% else %}
+    <span class="badge badge-danger"> {{ switch_state[switch].name }} : OFF </span>
+    {% endif %}
+    </div>
+{% endfor %}
+</div>
+
+<!--<script type="text/javascript">-->
+<!--         $(document).ready(function() {-->
+
+<!--           // sending a connect request to the server.-->
+<!--           var socket = io.connect('http://127.0.0.1:5000');-->
+<!--            $('#subscribe_messages').append(':: ' + socket + '<br><br>');-->
+<!--           socket.on('mqtt_message', function(data) {-->
+<!--               console.log('mqtt_message', data);-->
+<!--               $('#subscribe_messages').append(':: ' + data + '<br><br>');-->
+<!--           });-->
+<!--         });-->
+<!--</script>-->
+{% endblock %}
+
