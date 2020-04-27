@@ -30,6 +30,8 @@ templateData = {
     'switch_state' : switch_state
 }
 
+devices = ['sw0', 'sw1', 'sw2', 'sw3']
+
 app = Flask(__name__)
 app.config['SECRET'] = 'mysecretkey'
 app.config['TEMPLATES_AUTO_RELOAD'] = True
@@ -89,7 +91,8 @@ def control_device(deviceid, status):
 
 @mqtt.on_connect()
 def handle_connect(client, userdata, flags, rc):
-    mqtt.subscribe('sw0')
+    for device in devices:
+        mqtt.subscribe(device)
 
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, msg):
