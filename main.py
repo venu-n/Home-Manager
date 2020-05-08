@@ -55,7 +55,7 @@
 #     app.run()
 
 # main.py
-import eventlet
+# import eventlet
 from flask import Flask, render_template
 from flask_mqtt import Mqtt
 import json
@@ -66,14 +66,15 @@ if platform.system() == 'Darwin':
     pass
 else:
     import RPi.GPIO as gpio
+#    gpio.cleanup()
     gpio.setmode(gpio.BCM)
     gpio.setup(18, gpio.OUT)
     gpio.setup(23, gpio.OUT)
     gpio.setup(24, gpio.OUT)
     gpio.setup(25, gpio.OUT)
 
-eventlet.monkey_patch()
-
+# eventlet.monkey_patch()
+ 
 switch_state = {
     'sw0' : {'name': 'Device 1' ,'state': 'false'},
     'sw1' : {'name': 'Device 2' ,'state': 'false'},
@@ -95,19 +96,20 @@ devices = ['sw0', 'sw1', 'sw2', 'sw3']
 app = Flask(__name__)
 app.config['SECRET'] = 'mysecretkey'
 app.config['TEMPLATES_AUTO_RELOAD'] = True
-app.config['MQTT_BROKER_URL'] = '192.168.1.102'
+app.config['MQTT_BROKER_URL'] = '127.0.0.1'
 app.config['MQTT_BROKER_PORT'] =  1883
-app.config['MQTT_USERNAME'] = 'home'
-app.config['MQTT_PASSWORD'] =  'Home'
+app.config['MQTT_USERNAME'] = 'homegate'
+app.config['MQTT_PASSWORD'] =  'Homegate2021!'
 app.config['MQTT_KEEPALIVE'] = 5
 app.config['MQTT_TLS_ENABLED'] = False
 
 mqtt = Mqtt(app)
-socketio = SocketIO(app)
+# socketio = SocketIO(app)
 
 @app.route('/')
 def dashboard():
-    return render_template("dashboard.html", **templateData)
+    # return render_template("dashboard.html", **templateData)
+    return render_template("dashboard.html")
 
 @app.route('/s')
 def settings():
@@ -168,6 +170,7 @@ def handle_logging(client, userdata, level, buf):
         print(level, buf)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    #app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port='5000')
     #socketio.run(app, host='0.0.0.0', port=5000, use_reloader=False, debug=True)
     #socketio.run(app)

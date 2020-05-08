@@ -49,8 +49,8 @@
   var HOST = "192.168.1.102";
   var PORT = 1884;
   var CLIENT_ID = "ID-" + Math.round(Math.random() * 1000);
-  var username = "home";
-  var password = "Home";
+  var username = "homegate";
+  var password = "Homegate2021!";
 
   var client = new Paho.MQTT.Client(HOST, PORT, CLIENT_ID);  
   client.connect({userName: username, password: password, onSuccess:onConnect, onFailure:onFail});                     
