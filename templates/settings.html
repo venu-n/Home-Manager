@@ -3,40 +3,4 @@
 {% block content %}
     <h3> Settings </h3>
 
-<div>start</div>
-<div id="subscribe_messages"> </div>
-<div>end</div>
-
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
-<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
-
-<!--<script type="text/javascript" charset="utf-8">-->
-<!--  $(document).ready(function() {-->
-<!--  $('#subscribe_messages').append('::inside doc ready' + '<br><br>');-->
-<!--    //var socket = io.connect('http://' + document.domain + ':' + location.port);-->
-<!--    // var socket = io.connect('http://localhost' + ':' + '5000');-->
-<!--    var socket = io.connect('http://localhost:5000');-->
-<!--    $('#subscribe_messages').append(':: ' + socket + '<br><br>');-->
-<!--    // listen for mqtt_message events-->
-<!--    // when a new message is received, log and append the data to the page-->
-<!--    socket.on('mqtt_message', function(data) {-->
-<!--      console.log(data);-->
-
-<!--      // var text = '(' + data['topic'] + ' qos: ' + data['qos'] + ') ' + data['payload'];-->
-<!--      $('#subscribe_messages').append('-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;FUN-&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;' + '<br><br>');-->
-<!--      $('#subscribe_messages').append(data + '<br><br>');-->
-<!--    })-->
-<!--  });-->
-      <script type="text/javascript">
-         $(document).ready(function() {
-
-           // sending a connect request to the server.
-           var socket = io.connect('http://127.0.0.1:5000');
-            $('#subscribe_messages').append(':: ' + socket + '<br><br>');
-           socket.on('mqtt_message', function(msg) {
-               console.log('After connect', msg);
-           });
-         });
-</script>
 {% endblock %}

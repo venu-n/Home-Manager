@@ -1,8 +1,7 @@
 
 {% extends "template.html" %}
 {% block content %}
-<!--<script src="https://code.jquery.com/jquery-3.3.1.js"></script>-->
-<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>-->
+
 
 <div class="container-fluid">
     <div style="width: 35rem;font-size: 14px">
@@ -13,40 +12,157 @@
           <div class="col-md"><span class="badge badge-dark">Pressure: 99psa</span></div>
           <div class="col-md"><span class="badge badge-dark">Altitude: 199MSL</span></div>
       </div>
+      <br>
         <div class="row">
-            <div class="col-sm"><span class="badge badge-success">Device 1: ON</span></div>
-            <div class="col-sm"><span class="badge badge-danger">Device 2: OFF</span></div>
-            <div class="col-sm"><span class="badge badge-danger">Device 3: OFF</span></div>
-            <div class="col-sm"><span class="badge badge-danger">Device 4: OFF</span></div>
+            <div class="col-sm"><span id='d0' class="card">Device 1 </span></div> <br>
+            <div class="col-sm"><span id='d1' class="btn">Device 2</span></div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-sm"><span id='d2' class="btn">Device 3</span></div> <br>
+            <div class="col-sm"><span id='d3' class="btn">Device 4</span></div>
         </div>
     </div>
 </div>
-<h5> Current Status </h5>
-<div> {{ data }}</div>
-<h5> Current Status </h5>
-<div class="row">
-{% for switch in switch_state %}
-    <div class="col-sm">
-    {% if (switch_state[switch].state) == 'true' %}
-    <span class="badge badge-success"> {{ switch_state[switch].name }} : ON </span>
-    {% else %}
-    <span class="badge badge-danger"> {{ switch_state[switch].name }} : OFF </span>
-    {% endif %}
-    </div>
-{% endfor %}
-</div>
+<!--<h5> Current Status </h5>-->
+<!--<div> {{ data }}</div>-->
+<!--<h5> Current Status </h5>-->
+<!--<div class="row">-->
+<!--{% for switch in switch_state %}-->
+<!--    <div class="col-sm">-->
+<!--    {% if (switch_state[switch].state) == 'true' %}-->
+<!--    <span class="badge badge-success"> {{ switch_state[switch].name }} : ON </span>-->
+<!--    {% else %}-->
+<!--    <span class="badge badge-danger"> {{ switch_state[switch].name }} : OFF </span>-->
+<!--    {% endif %}-->
+<!--    </div>-->
+<!--{% endfor %}-->
+<!--</div>-->
 
-<!--<script type="text/javascript">-->
-<!--         $(document).ready(function() {-->
+<!--<div id="subscribe_messages"> This is my Text </div>-->
 
-<!--           // sending a connect request to the server.-->
-<!--           var socket = io.connect('http://127.0.0.1:5000');-->
-<!--            $('#subscribe_messages').append(':: ' + socket + '<br><br>');-->
-<!--           socket.on('mqtt_message', function(data) {-->
-<!--               console.log('mqtt_message', data);-->
-<!--               $('#subscribe_messages').append(':: ' + data + '<br><br>');-->
-<!--           });-->
-<!--         });-->
-<!--</script>-->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+  var devices = ["sw0", "sw1", "sw2", "sw3"];
+  var HOST = "192.168.1.102";
+  var PORT = 1884;
+  var CLIENT_ID = "ID-" + Math.round(Math.random() * 1000);
+  var username = "home";
+  var password = "Home";
+
+  var client = new Paho.MQTT.Client(HOST, PORT, CLIENT_ID);  
+  client.connect({userName: username, password: password, onSuccess:onConnect, onFailure:onFail});                     
+
+    client.onMessageArrived = function (message) {
+        topic = message.destinationName;
+        payload = message.payloadString;
+        console.log("Topic: " + topic + ";Payload: " + payload);
+        // index = 0;
+        // str_index = index.toString();
+        if (topic == devices[0]){
+          if (payload == 'true') {
+            $('#d0').text('Device 1: ON');
+            $('#d0').removeClass('badge-danger').addClass('badge-success');
+          } else {
+            $('#d0').text('Device 1: OFF');
+            $('#d0').removeClass('badge-success').addClass('badge-danger');
+          }
+        } 
+        if (topic == devices[1]){
+          if (payload == 'true') {
+            $('#d1').text('Device 2: ON');
+            $('#d1').removeClass('badge-danger').addClass('badge-success');
+          } else {
+            $('#d1').text('Device 2: OFF');
+            $('#d1').removeClass('badge-success').addClass('badge-danger');
+          }
+        }
+        if (topic == devices[2]){
+          if (payload == 'true') {
+            $('#d2').text('Device 3: ON');
+            $('#d2').removeClass('badge-danger').addClass('badge-success');
+          } else {
+            $('#d2').text('Device 3: OFF');
+            $('#d2').removeClass('badge-success').addClass('badge-danger');
+          }
+        }
+        if (topic == devices[3]){
+          if (payload == 'true') {
+            $('#d3').text('Device 4: ON');
+            $('#d3').removeClass('badge-danger').addClass('badge-success');
+          } else {
+            $('#d3').text('Device 4: OFF');
+            $('#d3').removeClass('badge-success').addClass('badge-danger');
+          }
+        } 
+
+        }
+
+    function onConnect() {
+        console.log("connected");
+        for (i=0; i < 4; i++){ 
+          client.subscribe(devices[i]);
+        }
+        // Subscribe to queue - moved to within function
+        message = new Paho.MQTT.Message("Hello");
+        message.destinationName = "sw0";
+        client.send(message);
+
+                         }
+
+    function onFail(msg){
+      console.log("Connection failed");
+      console.log(msg);
+    }
+
+    $('#d0').click(function(){
+      if ($('#d0').text() == 'Device 1: OFF'){
+          message = new Paho.MQTT.Message("true");
+          message.destinationName = devices[0];  
+          client.send(message);  
+      } else if ($('#d0').text() == 'Device 1: ON'){
+          message = new Paho.MQTT.Message("false");
+          message.destinationName = devices[0];  
+          client.send(message);  
+      }
+    });
+    $('#d1').click(function(){
+      if ($('#d1').text() == 'Device 2: OFF'){
+          message = new Paho.MQTT.Message("true");
+          message.destinationName = devices[1];  
+          client.send(message);  
+      } else if ($('#d1').text() == 'Device 2: ON'){
+          message = new Paho.MQTT.Message("false");
+          message.destinationName = devices[1];  
+          client.send(message);  
+      }
+    });
+    $('#d2').click(function(){
+      if ($('#d2').text() == 'Device 3: OFF'){
+          message = new Paho.MQTT.Message("true");
+          message.destinationName = devices[2];  
+          client.send(message);  
+      } else if ($('#d2').text() == 'Device 3: ON'){
+          message = new Paho.MQTT.Message("false");
+          message.destinationName = devices[2];  
+          client.send(message);  
+      }
+    });
+    $('#d3').click(function(){
+      if ($('#d3').text() == 'Device 4: OFF'){
+          message = new Paho.MQTT.Message("true");
+          message.destinationName = devices[3];  
+          client.send(message);  
+      } else if ($('#d3').text() == 'Device 4: ON'){
+          message = new Paho.MQTT.Message("false");
+          message.destinationName = devices[3];  
+          client.send(message);  
+      }
+    });
+
+
+</script>
 {% endblock %}
 

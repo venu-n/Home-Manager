@@ -1,18 +1,78 @@
+# from flask import Flask, render_template
+# from flask_mqtt import Mqtt
+# import json
+
+# app = Flask(__name__)
+
+# app.config['SECRET'] = 'mysecretkey'
+# app.config['TEMPLATES_AUTO_RELOAD'] = True
+# app.config['MQTT_BROKER_URL'] = '192.168.1.102'
+# app.config['MQTT_BROKER_PORT'] =  1884
+# app.config['MQTT_USERNAME'] = 'homegate'
+# app.config['MQTT_PASSWORD'] =  'Homegate2021!'
+# app.config['MQTT_KEEPALIVE'] = 5
+# app.config['MQTT_TLS_ENABLED'] = False
+
+# devices = ['sw0', 'sw1', 'sw2', 'sw3']
+
+# mqtt = Mqtt(app)
+
+# @app.route('/host')
+# def dashboard():
+#     return render_template('dashboard.html')
+
+# @app.route('/')
+# def settings():
+#     return render_template('settings.html')
+
+# @mqtt.on_connect()
+# def handle_connect(client, userdata, flags, rc):
+#     print('Connected!')
+#     mqtt.subscribe('sw0')
+#     for device in devices:
+#         mqtt.subscribe(device)
+#         print('subscribed to : ' + device)
+
+# @mqtt.on_message()
+# def handle_mqtt_message(client, userdata, message):
+#     # data = dict(
+#     #     topic=message.topic,
+#     #     payload=message.payload.decode()
+#     # )
+#     topic=message.topic,
+#     payload=message.payload.decode()
+#     print(topic)
+#     print(payload)
+ 
+
+# @mqtt.on_log()
+# def handle_logging(client, userdata, level, buf):
+#     if level == 8:
+#         print(level, buf)
+
+# if __name__ == '__main__':
+#     # app.run(debug=True, host='0.0.0.0')
+#     app.run()
+
 # main.py
 import eventlet
 from flask import Flask, render_template
 from flask_mqtt import Mqtt
 import json
 from flask_socketio import SocketIO
-import RPi.GPIO as gpio
+import platform
+
+if platform.system() == 'Darwin':
+    pass
+else:
+    import RPi.GPIO as gpio
+    gpio.setmode(gpio.BCM)
+    gpio.setup(18, gpio.OUT)
+    gpio.setup(23, gpio.OUT)
+    gpio.setup(24, gpio.OUT)
+    gpio.setup(25, gpio.OUT)
 
 eventlet.monkey_patch()
-
-gpio.setmode(gpio.BCM)
-gpio.setup(18, gpio.OUT)
-gpio.setup(23, gpio.OUT)
-gpio.setup(24, gpio.OUT)
-gpio.setup(25, gpio.OUT)
 
 switch_state = {
     'sw0' : {'name': 'Device 1' ,'state': 'false'},
@@ -35,10 +95,10 @@ devices = ['sw0', 'sw1', 'sw2', 'sw3']
 app = Flask(__name__)
 app.config['SECRET'] = 'mysecretkey'
 app.config['TEMPLATES_AUTO_RELOAD'] = True
-app.config['MQTT_BROKER_URL'] = '192.168.1.103'
+app.config['MQTT_BROKER_URL'] = '192.168.1.102'
 app.config['MQTT_BROKER_PORT'] =  1883
-app.config['MQTT_USERNAME'] = 'homegate'
-app.config['MQTT_PASSWORD'] =  'Homegate2021!'
+app.config['MQTT_USERNAME'] = 'home'
+app.config['MQTT_PASSWORD'] =  'Home'
 app.config['MQTT_KEEPALIVE'] = 5
 app.config['MQTT_TLS_ENABLED'] = False
 
@@ -96,7 +156,10 @@ def handle_connect(client, userdata, flags, rc):
 
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, msg):
-    control_device(msg.topic, msg.payload.decode())
+    if platform.system() == 'Darwin':
+        print(msg.topic + " : " + msg.payload.decode())
+    else:
+        control_device(msg.topic, msg.payload.decode())
     # socketio.emit('mqtt_message', data)
 
 @mqtt.on_log()
@@ -108,4 +171,3 @@ if __name__ == "__main__":
     app.run(debug=True)
     #socketio.run(app, host='0.0.0.0', port=5000, use_reloader=False, debug=True)
     #socketio.run(app)
-

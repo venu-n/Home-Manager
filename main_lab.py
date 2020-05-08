@@ -6,8 +6,8 @@ from flask_socketio import SocketIO
 app = Flask(__name__)
 app.config['SECRET'] = 'mysecretkey'
 app.config['TEMPLATES_AUTO_RELOAD'] = True
-app.config['MQTT_BROKER_URL'] = '192.168.1.103'
-app.config['MQTT_BROKER_PORT'] =  1883
+app.config['MQTT_BROKER_URL'] = '192.168.1.102'
+app.config['MQTT_BROKER_PORT'] =  1884
 app.config['MQTT_USERNAME'] = 'homegate'
 app.config['MQTT_PASSWORD'] =  'Homegate2021!'
 app.config['MQTT_KEEPALIVE'] = 5
@@ -48,5 +48,5 @@ def handle_logging(client, userdata, level, buf):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
-    # socketio.run(app, host='localhost', port=5000, use_reloader=False, debug=True)
+    #app.run(debug=True)
+    socketio.run(app, host='localhost', port=5000, use_reloader=False, debug=True)
